@@ -1,0 +1,14 @@
+{
+    "neodev": {
+        "library": true,
+        "plugins": true
+    },
+    "neoconf": {
+        "plugins": {
+            "lua_ls": {
+                "enabled": true
+            }
+        }
+    }
+
+}
