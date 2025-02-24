@@ -1,6 +1,6 @@
 return {
   "ellisonleao/gruvbox.nvim",
-  priority = 1000,
+  priority = 10000,
   config = function()
     require("gruvbox").setup({
       terminal_colors = true, -- Enable colors for the terminal

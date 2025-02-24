@@ -19,7 +19,6 @@ kmap.set("n", "<C-j>", ":TmuxNavigateDown<CR>", opts)
 kmap.set("n", "<C-k>", ":TmuxNavigateUp<CR>", opts)
 kmap.set("n", "<C-l>", ":TmuxNavigateRight<CR>", opts)
 
-
 -- Window SPlit
 
 kmap.set("n", "<leader>sv", ":vsplit<CR>", opts)
@@ -83,11 +82,15 @@ end, { noremap = true, silent = true })
 -- Run Manim
 vim.keymap.set("n", "<leader>rr", function()
 	f = vim.fn.expand("%") -- store current file
-	vim.cmd("wincmd h") -- Move to left split (assuming terminal is there)
-	vim.cmd("terminal manim " .. f .. " -p") -- Run manim with the current file
+    vim.fn.system("tmux select-pane -L")  -- Move left in Tmux only
+	vim.defer_fn(function()
+		-- Send the command to the Tmux pane
+		vim.fn.system("tmux send-keys 'manim " .. f .. " -p' Enter")
+	end, 200) -- Shorter delay should be enough
 	vim.cmd("startinsert") -- Enter terminal mode
 	vim.defer_fn(function()
-		vim.cmd("wincmd l") -- Move back to the file after a short delay
+        vim.fn.system("tmux select-pane -R")  -- Move left in Tmux only
+		-- Move back to the file after a short delay
 	end, 500) -- Adjust delay if needed (in milliseconds)
 end, { noremap = true, silent = true })
 
@@ -112,7 +115,7 @@ vim.keymap.set("n", "<leader>rv", function() -- Review last render
 	vim.cmd("wincmd h")
 	vim.cmd(
 		'call jobstart(["mpv", "--geometry=50%:50%", "/tem/projects/BlenderPluginVIdeo/Source/MathSection/media/videos/Vectors/1080p60/DimensionalGraphScene.mp4"], {"detach": v:true})'
-    )
+	)
 	vim.cmd("startinsert")
 
 	vim.defer_fn(function()
