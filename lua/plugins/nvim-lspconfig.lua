@@ -54,18 +54,10 @@ local config = function()
 
 	-- C Cpp
 	lspconfig.clangd.setup({
-		on_attach = on_attach,
-		capabilities = capabilities,
-		cmd = function()
-			local filetype = vim.bo.filetype
-			if filetype == "cpp" then
-				return { "clangd", "--background-index", "--clang-tidy", "--log=verbose", "--std=c++17" }
-			elseif filetype == "c" then
-				return { "clangd", "--background-index", "--clang-tidy", "--log=verbose", "--std=c11" }
-			else
-				return { "clangd", "--background-index", "--clang-tidy", "--log=verbose" }
-			end
-		end,
+		capabilities = require("cmp_nvim_lsp").default_capabilities(), -- Ensure LSP capabilities
+		on_attach = on_attach, -- Ensure keybindings are applied
+		filetypes = { "c", "cpp" }, -- Explicitly attach to C and C++
+		cmd = { "clangd", "--background-index", "--clang-tidy", "--completion-style=detailed", "--log=verbose" },
 	})
 
 	local luacheck = require("efmls-configs.linters.luacheck")
@@ -73,10 +65,10 @@ local config = function()
 	local flake8 = require("efmls-configs.linters.flake8")
 	local black = require("efmls-configs.formatters.black")
 	local cpplint = require("efmls-configs.linters.cpplint")
-	local clang_format = {
-		formatCommand = "clang-format -style=Google",
-		formatStdin = true,
-	}
+    local clang_format = {
+        formatCommand = "clang-format --assume-filename=.cpp -style='{BasedOnStyle: Google, IndentWidth: 4}'",
+        formatStdin = true,
+    }
 
 	-- configure efm server
 	lspconfig.efm.setup({

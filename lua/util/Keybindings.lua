@@ -59,10 +59,28 @@ local lspconfig = function(client, buffer)
 	vim.keymap.set("n", "<leader>lo", "<cmd>LSoutlineToggle<CR>", opts)
 end
 
+local DAP = function()
+	local dap = require("dap")
+
+	vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint)
+	vim.keymap.set("n", "<leader>B", dap.set_breakpoint)
+	vim.keymap.set("n", "<leader>-", dap.continue)
+end
+
+local DAPUI = function()
+	local dap, dapui = require("dap"), require("dapui")
+	vim.keymap.set("n", "<leader>do", dapui.open)
+	vim.keymap.set("n", "<leader>dc", dapui.close)
+	vim.keymap.set("n", "<leader>dt", dapui.toggle)
+end
+
 local module = {
 	["lsp_saga_keybinds"] = lsp_saga_keybinds,
 	["autocomplete"] = autocomplete,
 	["telescope"] = telescope,
-    ["lspconfig"] = lspconfig
+	["DAP"] = DAP,
+	["DAPUI"] = DAPUI,
+	["lspconfig"] = lspconfig,
 }
+
 return module

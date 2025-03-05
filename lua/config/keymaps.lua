@@ -62,17 +62,21 @@ vim.keymap.set("n", "lhh", function() -- open window in leftmost cell
 	vim.cmd("NvimTreeToggle")
 
 	-- Move to the leftmost split
-	vim.cmd("wincmd w")
+	vim.cmd("wincmd 100h")
 
 	-- Count the number of windows
 	local win_count = #vim.api.nvim_list_wins()
 
 	-- If fewer than 3 windows, create a vertical split
-	if win_count < 3 then
+	local timeout = 0
+	if win_count < 2 then
 		vim.cmd("vsplit") -- Create new vertical split
-		vim.cmd("wincmd w")
+		timeout = 50
+		vim.defer_fn(function()
+			vim.cmd("wincmd 100h")
+		end, 50)
 	end
-
+	vim.wait(timeout)
 	-- Open the file in the rightmost split
 	vim.cmd("edit " .. node.absolute_path)
 	vim.cmd("NvimTreeToggle")
@@ -82,14 +86,14 @@ end, { noremap = true, silent = true })
 -- Run Manim
 vim.keymap.set("n", "<leader>rr", function()
 	f = vim.fn.expand("%") -- store current file
-    vim.fn.system("tmux select-pane -L")  -- Move left in Tmux only
+	vim.fn.system("tmux select-pane -L") -- Move left in Tmux only
 	vim.defer_fn(function()
 		-- Send the command to the Tmux pane
 		vim.fn.system("tmux send-keys 'manim " .. f .. " -p' Enter")
 	end, 200) -- Shorter delay should be enough
 	vim.cmd("startinsert") -- Enter terminal mode
 	vim.defer_fn(function()
-        vim.fn.system("tmux select-pane -R")  -- Move left in Tmux only
+		vim.fn.system("tmux select-pane -R") -- Move left in Tmux only
 		-- Move back to the file after a short delay
 	end, 500) -- Adjust delay if needed (in milliseconds)
 end, { noremap = true, silent = true })
